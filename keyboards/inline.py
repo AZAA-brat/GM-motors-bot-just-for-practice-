@@ -1,6 +1,5 @@
 from keyboards.callbacks import LangCB
 from aiogram import types
-from aiogram.types import InlineKeyboardMarkup
 
 lang_kb = types.InlineKeyboardMarkup(
     inline_keyboard=[
