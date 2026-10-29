@@ -1,10 +1,13 @@
 from aiogram import Router
 from aiogram.filters import Command
-from database.storage import get_user_language, ensure_user_language
-from keyboards.inline import lang_kb
-from utils.phrases import get_text
 
+from database.storage import get_user_language, ensure_user_language, set_user_language
+from keyboards.inline import lang_kb
+from keyboards.reply import first_reply
+from utils.phrases import get_text
+from keyboards.callbacks import LangCB, LANG_MAP
 router = Router()
+
 @router.message(Command("start"))
 async def start_handler(message, db_pool):
     user_id = message.from_user.id
@@ -12,3 +15,12 @@ async def start_handler(message, db_pool):
     language = await get_user_language(db_pool, user_id)
     keyboard = lang_kb
     await message.answer(get_text("start", language), reply_markup=keyboard)
+
+@router.callback_query(LangCB.filter())
+async def language_handler(callback, db_pool, callback_data: LangCB):
+    code = LANG_MAP[callback_data.language]
+    user_id = callback.from_user.id
+    await set_user_language(db_pool, user_id, code)
+    await callback.answer()
+    await callback.message.edit_reply_markup(reply_markup=None)
+    await callback.message.answer(get_text("lang_set", code), reply_markup=first_reply(code))

@@ -17,6 +17,16 @@ CREATE_USERS_TABLE = """
 );
 """
 
+CREATE_OFFICES_TABLE = """
+    CREATE TABLE IF NOT EXISTS offices (
+    office_id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    name TEXT NOT NULL,
+    address TEXT NOT NULL,
+    latitude NUMERIC(9, 6) NOT NULL,
+    longitude NUMERIC(9, 6) NOT NULL
+);
+"""
+
 def create_pool() -> AsyncConnectionPool:
     return AsyncConnectionPool(
         kwargs=DB_CONFIG,
@@ -30,6 +40,7 @@ async def init_db(pool: AsyncConnectionPool) -> None:
     await pool.wait()
     async with pool.connection() as conn:
         await conn.execute(CREATE_USERS_TABLE)
+        await conn.execute(CREATE_OFFICES_TABLE)
 
 async def close_db(pool: AsyncConnectionPool) -> None:
     await pool.close()

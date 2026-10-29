@@ -6,10 +6,11 @@ from logging_config import setup_logger
 load_dotenv()
 from config import dp, bot
 import handlers.start as start
+import handlers.about as about
 import database.storage as st
 
 setup_logger()
-dp.include_routers(start.router)
+dp.include_routers(start.router, about.router)
 logger = logging.getLogger(__name__)
 
 async def on_startup(dispatcher: Dispatcher) -> None:
